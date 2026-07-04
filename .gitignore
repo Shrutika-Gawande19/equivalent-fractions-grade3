@@ -1,0 +1,37 @@
+# Node / npm
+node_modules/
+npm-debug.log*
+yarn.lock
+package-lock.json
+
+# Build artefacts
+dist/
+build/
+.vite/
+.vitest/
+.svelte-kit/
+.next/
+out/
+
+# OS / editor artefacts
+.DS_Store
+Thumbs.db
+*.log
+*.tmp
+
+# VS Code / IDE
+.vscode/
+.idea/
+*.suo
+*.user
+*.workspace
+
+# Environment files – **never** commit real values
+.env
+.env.local
+.env.*      # any other env variants
+
+# Gemini / Antigravity artefacts (your private workspace)
+.appData/
+.gemini/
+.antigravity-ide/
