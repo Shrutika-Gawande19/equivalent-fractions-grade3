@@ -103,15 +103,19 @@ export default function StoryPhase({ onComplete }) {
       <div className={`story-card ${anim ? 'flipping' : ''}`}>
         <div className="story-visual-section" style={{ padding: '0' }}>
           {s.img && (
-            <div className="story-main-image" style={{ 
-              width: '100%', 
-              height: '240px', 
-              backgroundImage: `url(${s.img})`,
-              backgroundSize: 'cover',
-              backgroundPosition: 'center',
-              borderRadius: '24px 24px 0 0',
-              borderBottom: '4px solid rgba(255,255,255,0.1)'
-            }} />
+            <img 
+              src={s.img} 
+              alt={s.title}
+              className="story-main-image" 
+              style={{ 
+                width: '100%', 
+                height: '240px',
+                display: 'block',
+                objectFit: 'contain',
+                borderRadius: '24px 24px 0 0',
+                borderBottom: '4px solid rgba(255,255,255,0.1)'
+              }} 
+            />
           )}
           <div className="story-image-overlay" />
         </div>

@@ -14,22 +14,62 @@ const PASS_SCORE = 6;
 // Generate questions for a world
 function generateWorldQuestions(worldIdx) {
   return Array.from({ length: QUESTIONS_PER_WORLD }, (_, i) => {
-    const nA = Math.floor(Math.random() * 3) + 1;
-    const dA = Math.floor(Math.random() * 4) + 2;
-    const mult = Math.floor(Math.random() * 2) + 2;
+    const dA = Math.floor(Math.random() * 4) + 2; // 2 to 5
+    const nA = Math.floor(Math.random() * (dA - 1)) + 1; // 1 to dA-1
+    const mult = Math.floor(Math.random() * 2) + 2; // 2 or 3
     const nB = nA * mult;
     const dB = dA * mult;
-    const isEquiv = Math.random() > 0.4;
-    return {
-      id: `W${worldIdx}_Q${i}`,
-      questionText: `Is ${nA}/${dA} equivalent to ${isEquiv ? nB + '/' + dB : (nB + 1) + '/' + dB}?`,
-      nA, dA,
-      nB: isEquiv ? nB : nB + 1,
-      dB,
-      isEquivalent: isEquiv,
-      options: ['Yes, equivalent ✓', 'No, not equivalent ✗'],
-      correctAnswer: isEquiv ? 'Yes, equivalent ✓' : 'No, not equivalent ✗',
-    };
+    
+    if (worldIdx === 0) {
+      // World 0: True / False
+      const isEquiv = Math.random() > 0.4;
+      const nB_show = isEquiv ? nB : nB + 1;
+      return {
+        id: `W${worldIdx}_Q${i}`,
+        type: 'true_false',
+        questionText: `Is ${nA}/${dA} equivalent to ${nB_show}/${dB}?`,
+        nA, dA, nB: nB_show, dB,
+        isEquivalent: isEquiv,
+        options: ['Yes, equivalent ✓', 'No, not equivalent ✗'],
+        correctAnswer: isEquiv ? 'Yes, equivalent ✓' : 'No, not equivalent ✗',
+      };
+    } else if (worldIdx === 1) {
+      // World 1: Multiple Choice
+      const wrong1 = { n: nB + 1, d: dB };
+      const wrong2 = { n: nB, d: dB + 1 };
+      const opts = [`${nB}/${dB}`, `${wrong1.n}/${wrong1.d}`, `${wrong2.n}/${wrong2.d}`];
+      // shuffle opts
+      for (let j = opts.length - 1; j > 0; j--) {
+        const k = Math.floor(Math.random() * (j + 1));
+        [opts[j], opts[k]] = [opts[k], opts[j]];
+      }
+      return {
+        id: `W${worldIdx}_Q${i}`,
+        type: 'multiple_choice',
+        questionText: `Find the fraction equivalent to ${nA}/${dA}.`,
+        nA, dA,
+        options: opts,
+        correctAnswer: `${nB}/${dB}`,
+      };
+    } else {
+      // World 2: Missing Value
+      const wrong1 = nB + 1;
+      const wrong2 = nB - 1 > 0 ? nB - 1 : nB + 2;
+      const opts = [nB.toString(), wrong1.toString(), wrong2.toString()];
+      // shuffle opts
+      for (let j = opts.length - 1; j > 0; j--) {
+        const k = Math.floor(Math.random() * (j + 1));
+        [opts[j], opts[k]] = [opts[k], opts[j]];
+      }
+      return {
+        id: `W${worldIdx}_Q${i}`,
+        type: 'missing_value',
+        questionText: `Find the missing number to make them equivalent:`,
+        nA, dA, nB, dB, // nB is the missing value we want them to find
+        options: opts,
+        correctAnswer: nB.toString(),
+      };
+    }
   });
 }
 
@@ -53,7 +93,7 @@ function WorldMap({ worlds, worldScores, onSelectWorld }) {
             <span className="world-name">{w.name}</span>
             <span className="world-desc">{w.diffs}</span>
             <div className="world-stars">
-              {[1,2,3].map(s => <span key={s} className={`world-star ${stars >= s ? 'earned' : ''}`}>⭐</span>)}
+              {[1, 2, 3].map(s => <span key={s} className={`world-star ${stars >= s ? 'earned' : ''}`}>⭐</span>)}
               {completed && <span className="world-score">{score}/{QUESTIONS_PER_WORLD}</span>}
             </div>
           </div>
@@ -90,13 +130,22 @@ function QuestionCard({ question, onAnswer, xp, streak }) {
       <div style={{ display: 'flex', justifyContent: 'center', margin: '12px 0' }}>
         <FractionBar numerator={question.nA} denominator={question.dA} width={220} height={44} />
       </div>
-      <div style={{ display: 'flex', justifyContent: 'center', margin: '4px 0 16px' }}>
-        <FractionBar numerator={question.nB} denominator={question.dB} width={220} height={44} colour="#a78bfa" />
-      </div>
+      
+      {question.type === 'true_false' && (
+        <div style={{ display: 'flex', justifyContent: 'center', margin: '4px 0 16px' }}>
+          <FractionBar numerator={question.nB} denominator={question.dB} width={220} height={44} colour="#a78bfa" />
+        </div>
+      )}
+
+      {question.type === 'missing_value' && (
+        <div style={{ display: 'flex', justifyContent: 'center', margin: '16px 0', fontSize: '1.5rem', fontWeight: 'bold' }}>
+          {question.nA}/{question.dA} = ? / {question.dB}
+        </div>
+      )}
 
       <p className="question-text">{question.questionText}</p>
 
-      <div className="options-grid">
+      <div className={question.type === 'missing_value' ? "options-grid options-small" : "options-grid"}>
         {question.options.map((opt, i) => {
           let cls = 'option-btn';
           if (answered) {
@@ -131,6 +180,8 @@ function QuestionCard({ question, onAnswer, xp, streak }) {
   );
 }
 
+/* Duplicate QuestionCard block removed */
+
 function WorldComplete({ world, score, onNext, onMap, isLastWorld }) {
   const stars = score >= 9 ? 3 : score >= 7 ? 2 : score >= PASS_SCORE ? 1 : 0;
   return (
@@ -138,13 +189,13 @@ function WorldComplete({ world, score, onNext, onMap, isLastWorld }) {
       <div className="world-complete-icon">{world.flag} {world.icon}</div>
       <h2 className="world-complete-title">{world.name} Complete!</h2>
       <div className="world-complete-stars">
-        {[1,2,3].map(s => <span key={s} className={`world-star ${stars >= s ? 'earned' : ''}`} style={{ animationDelay: `${s * 0.15}s` }}>⭐</span>)}
+        {[1, 2, 3].map(s => <span key={s} className={`world-star ${stars >= s ? 'earned' : ''}`} style={{ animationDelay: `${s * 0.15}s` }}>⭐</span>)}
       </div>
       <div className="world-complete-score">{score}/{QUESTIONS_PER_WORLD} Correct</div>
       {score >= PASS_SCORE
         ? <p style={{ color: 'var(--text-secondary)', marginBottom: 20 }}>
-            {isLastWorld ? 'All worlds complete! Amazing! 🎉' : 'World unlocked! Keep going! 🚀'}
-          </p>
+          {isLastWorld ? 'All worlds complete! Amazing! 🎉' : 'World unlocked! Keep going! 🚀'}
+        </p>
         : <p style={{ color: 'var(--red)', marginBottom: 20 }}>Need {PASS_SCORE}/{QUESTIONS_PER_WORLD} to unlock next world. Try again!</p>}
       <div style={{ display: 'flex', gap: 12, justifyContent: 'center' }}>
         {score >= PASS_SCORE && !isLastWorld && <button className="btn btn-primary btn-sm" onClick={onNext}>Next World →</button>}
@@ -154,8 +205,11 @@ function WorldComplete({ world, score, onNext, onMap, isLastWorld }) {
   );
 }
 
+
+
+
 export default function PlayPhase({ onComplete, xp, streak, onScoreUpdate }) {
-  const [view, setView] = useState('map'); // 'map' | 'playing' | 'worldComplete'
+  const [view, setView] = useState('map');
   const [currentWorld, setCurrentWorld] = useState(0);
   const [worldScores, setWorldScores] = useState(Array(TOTAL_WORLDS).fill(null));
   const [questions, setQuestions] = useState([]);
@@ -176,16 +230,13 @@ export default function PlayPhase({ onComplete, xp, streak, onScoreUpdate }) {
       worldScoreRef.current += 1;
     }
     const newScore = worldScoreRef.current;
-
     setQuestionIdx(prev => {
       const nextIdx = prev + 1;
       if (nextIdx >= QUESTIONS_PER_WORLD) {
-        // World complete — update scores and switch view
+        // World complete
         setWorldScores(prevScores => {
           const updated = [...prevScores];
           updated[currentWorld] = newScore;
-
-          // If last world beaten, trigger onComplete after a delay
           if (currentWorld === TOTAL_WORLDS - 1 && newScore >= PASS_SCORE) {
             setTimeout(() => onComplete({ worldScores: updated, totalXP: xp }), 2000);
           }
@@ -201,6 +252,8 @@ export default function PlayPhase({ onComplete, xp, streak, onScoreUpdate }) {
     const next = currentWorld + 1;
     if (next < TOTAL_WORLDS) startWorld(next);
   }, [currentWorld, startWorld]);
+
+
 
   const currentQuestion = questions[questionIdx];
 
@@ -222,7 +275,7 @@ export default function PlayPhase({ onComplete, xp, streak, onScoreUpdate }) {
             {WORLDS[currentWorld].flag} {WORLDS[currentWorld].name} · Q{questionIdx + 1}/{QUESTIONS_PER_WORLD} · Score: {worldScoreRef.current}
           </div>
           <div className="progress-dots">
-            {Array.from({length: QUESTIONS_PER_WORLD}).map((_, i) => (
+            {Array.from({ length: QUESTIONS_PER_WORLD }).map((_, i) => (
               <div key={i} className={`progress-dot ${i < questionIdx ? 'completed' : i === questionIdx ? 'active' : ''}`} />
             ))}
           </div>
@@ -248,3 +301,4 @@ export default function PlayPhase({ onComplete, xp, streak, onScoreUpdate }) {
     </div>
   );
 }
+

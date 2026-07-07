@@ -4,21 +4,9 @@ import { getWonderNarration } from '../../utils/narration';
 
 const WONDER_QUESTIONS = [
   {
-    question: "John has 1/2 of a pizza. Sarah has 2/4 of the SAME size pizza. Who has more?",
-    subtext: "When two fractions cover the same area, they are called equivalent fractions!",
-    emoji: "🍕",
-    bgEmojis: ["½", "¼", "⅔", "✨", "🌍", "="],
-  },
-  {
-    question: "Mei has a chocolate bar cut into 4 pieces and eats 2. John's bar is cut into 2 — he eats 1. Did they eat the same amount?",
-    subtext: "Two fractions that look different can still be equal!",
-    emoji: "🍫",
-    bgEmojis: ["½", "2/4", "✨", "🌏", "=", "?"],
-  },
-  {
     question: "Priya's dosa is cut into 6 pieces. She eats 3. Is that the same as eating 1/2?",
     subtext: "3/6 and 1/2... are they secretly the same fraction?",
-    emoji: "🫓",
+    image: "/assets/images/dosa_6_pieces.png",
     bgEmojis: ["⅓", "3/6", "½", "✨", "=", "🌎"],
   },
 ];
@@ -77,7 +65,11 @@ export default function WonderPhase({ onComplete }) {
         </div>
 
         <div className={`wonder-question-card ${stage >= 1 ? 'visible' : ''}`}>
-          <div className="wonder-emoji">{wonder.emoji}</div>
+          {wonder.image ? (
+            <img src={wonder.image} alt="Fraction illustration" className="wonder-image" style={{ width: '80px', height: '80px', margin: '0 auto', display: 'block', objectFit: 'contain' }} />
+          ) : (
+            <div className="wonder-emoji">{wonder.emoji}</div>
+          )}
           <h2 className="wonder-question-text">{wonder.question}</h2>
           <p className="wonder-subtext">{wonder.subtext}</p>
         </div>
