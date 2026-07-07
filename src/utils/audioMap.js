@@ -23,5 +23,7 @@ export const audioMap = {
   "Same spot, different names!": "/assets/audio/audio_same_spot_different_names_21.mp3",
   "Multiply or divide the top AND bottom by the same number and you get an equivalent fraction. The value stays the same!": "/assets/audio/audio_multiply_or_divide_the_top_and_bottom_by_22.mp3",
   "\"1/2 × 2/2 = 2/4 — multiply both parts equally!\"": "/assets/audio/audio_1_2_2_2_2_4_multiply_both_parts_equally_23.mp3",
-  "Now you know the secret!": "/assets/audio/audio_now_you_know_the_secret_24.mp3"
+  "Now you know the secret!": "/assets/audio/audio_now_you_know_the_secret_24.mp3",
+  "Correct.": "/assets/audio/audio_correct_25.mp3",
+  "Wrong.": "/assets/audio/audio_wrong_26.mp3"
 };

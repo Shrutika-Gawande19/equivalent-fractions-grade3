@@ -44,3 +44,7 @@ export const getStoryNarration = (slideIndex) => {
     default: return [];
   }
 };
+
+// Play Phase feedback – single word, using pre-generated ElevenLabs audio
+export const getCorrectNarration = () => [celebrate("Correct.")];
+export const getWrongNarration  = () => [say("Wrong.")];

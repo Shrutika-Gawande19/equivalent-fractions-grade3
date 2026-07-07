@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import FloatingFractions from './components/FloatingFractions';
 import IntroScreen from './components/IntroScreen';
 import WonderPhase from './components/phases/WonderPhase';
@@ -6,6 +6,7 @@ import StoryPhase from './components/phases/StoryPhase';
 import SimulatePhase from './components/phases/SimulatePhase';
 import PlayPhase from './components/phases/PlayPhase';
 import ReflectPhase from './components/phases/ReflectPhase';
+import { stopNarration, setMuted } from './utils/audio';
 
 const PHASES = ['intro', 'wonder', 'story', 'simulate', 'play', 'reflect'];
 const JOURNEY_ITEMS = [
@@ -23,8 +24,20 @@ export default function App() {
   const [streak, setStreak] = useState(0);
   const [playStats, setPlayStats] = useState(null);
 
-  const goHome = useCallback(() => { setPhase('intro'); setPlayStats(null); }, []);
-  const restart = useCallback(() => { setPhase('wonder'); setPlayStats(null); }, []);
+  const toggleAudio = useCallback(() => {
+    const next = !audioEnabled;
+    setAudioEnabled(next);
+    setMuted(!next);
+  }, [audioEnabled]);
+
+  // Stop any narration whenever the phase changes to prevent overlap
+  const changePhase = useCallback((newPhase) => {
+    stopNarration();
+    setPhase(newPhase);
+  }, []);
+
+  const goHome = useCallback(() => { changePhase('intro'); setPlayStats(null); }, [changePhase]);
+  const restart = useCallback(() => { changePhase('wonder'); setPlayStats(null); }, [changePhase]);
 
   const handleScoreUpdate = useCallback((isCorrect) => {
     if (isCorrect) {
@@ -43,7 +56,11 @@ export default function App() {
       <FloatingFractions />
       <div className="app-container">
         {/* Audio Toggle */}
-        <button className="audio-toggle-btn" onClick={() => setAudioEnabled(p => !p)} title={audioEnabled ? 'Mute' : 'Unmute'}>
+        <button
+          className="audio-toggle-btn"
+          onClick={toggleAudio}
+          title={audioEnabled ? 'Mute' : 'Unmute'}
+        >
           {audioEnabled ? '🔊' : '🔇'}
         </button>
 
@@ -77,16 +94,17 @@ export default function App() {
         )}
 
         {/* Phase Content */}
-        {phase === 'intro' && <IntroScreen onStart={() => setPhase('wonder')} />}
-        {phase === 'wonder' && <WonderPhase onComplete={() => setPhase('story')} />}
-        {phase === 'story' && <StoryPhase onComplete={() => setPhase('simulate')} />}
-        {phase === 'simulate' && <SimulatePhase onComplete={() => setPhase('play')} />}
+        {phase === 'intro'    && <IntroScreen onStart={() => changePhase('wonder')} />}
+        {phase === 'wonder'   && <WonderPhase   onComplete={() => changePhase('story')}    audioEnabled={audioEnabled} />}
+        {phase === 'story'    && <StoryPhase    onComplete={() => changePhase('simulate')}  audioEnabled={audioEnabled} />}
+        {phase === 'simulate' && <SimulatePhase onComplete={() => changePhase('play')}      audioEnabled={audioEnabled} />}
         {phase === 'play' && (
           <PlayPhase
-            onComplete={(stats) => { setPlayStats(stats); setPhase('reflect'); }}
+            onComplete={(stats) => { setPlayStats(stats); changePhase('reflect'); }}
             xp={xp}
             streak={streak}
             onScoreUpdate={handleScoreUpdate}
+            audioEnabled={audioEnabled}
           />
         )}
         {phase === 'reflect' && (

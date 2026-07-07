@@ -54,7 +54,7 @@ const STORY_SLIDES = [
   },
 ];
 
-export default function StoryPhase({ onComplete }) {
+export default function StoryPhase({ onComplete, audioEnabled }) {
   const [slide, setSlide] = useState(0);
   const [anim, setAnim] = useState(false);
   const [textVis, setTextVis] = useState(false);
@@ -70,14 +70,16 @@ export default function StoryPhase({ onComplete }) {
     const t2 = setTimeout(() => setHlVis(true), 800);
     
     // Play narration for the current slide
-    narrate(getStoryNarration(slide), true);
+    if (audioEnabled) {
+      narrate(getStoryNarration(slide), true);
+    }
 
     return () => { 
       clearTimeout(t1); 
       clearTimeout(t2); 
       stopNarration();
     };
-  }, [slide]);
+  }, [slide, audioEnabled]);
 
   const goNext = useCallback(() => {
     if (anim) return;

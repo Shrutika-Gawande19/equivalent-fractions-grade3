@@ -40,7 +40,10 @@ const phrases = [
   { text: "Same spot, different names!", style: 'statement' },
   { text: "Multiply or divide the top AND bottom by the same number and you get an equivalent fraction. The value stays the same!", style: 'statement' },
   { text: '"1/2 × 2/2 = 2/4 — multiply both parts equally!"', style: 'emphasis' },
-  { text: "Now you know the secret!", style: 'celebration' }
+  { text: "Now you know the secret!", style: 'celebration' },
+  // Play Phase – answer feedback
+  { text: "Correct.", style: 'celebration' },
+  { text: "Wrong.", style: 'statement' },
 ];
 
 const getSettings = (style) => {

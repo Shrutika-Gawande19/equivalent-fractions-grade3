@@ -11,7 +11,7 @@ const WONDER_QUESTIONS = [
   },
 ];
 
-export default function WonderPhase({ onComplete }) {
+export default function WonderPhase({ onComplete, audioEnabled }) {
   const [wonder] = useState(() => WONDER_QUESTIONS[Math.floor(Math.random() * WONDER_QUESTIONS.length)]);
   const [stage, setStage] = useState(0);
   const [particles, setParticles] = useState([]);
@@ -33,9 +33,11 @@ export default function WonderPhase({ onComplete }) {
     const t1 = setTimeout(() => setStage(1), 300);
     const t2 = setTimeout(() => setStage(2), 1400);
     // Play narration for wonder question and subtext
-    narrate(getWonderNarration(wonder), true);
+    if (audioEnabled) {
+      narrate(getWonderNarration(wonder), true);
+    }
     return () => { clearTimeout(t1); clearTimeout(t2); stopNarration(); };
-  }, [wonder]);
+  }, [wonder, audioEnabled]);
 
   const handleDiscover = () => {
     setTimeout(() => onComplete(), 300);

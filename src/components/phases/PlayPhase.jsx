@@ -1,5 +1,7 @@
 import React, { useState, useCallback, useRef } from 'react';
 import { FractionBar } from '../shared/FractionDiagrams';
+import { narrate } from '../../utils/audio';
+import { getCorrectNarration, getWrongNarration } from '../../utils/narration';
 
 const WORLDS = [
   { id: 0, name: 'Toronto Bakery', flag: '🇨🇦', icon: '🍞', color: '#ef4444', diffs: 'Easy' },
@@ -103,7 +105,7 @@ function WorldMap({ worlds, worldScores, onSelectWorld }) {
   );
 }
 
-function QuestionCard({ question, onAnswer, xp, streak }) {
+function QuestionCard({ question, onAnswer, xp, streak, audioEnabled }) {
   const [selected, setSelected] = useState(null);
   const [answered, setAnswered] = useState(false);
   const [isCorrect, setIsCorrect] = useState(false);
@@ -114,6 +116,10 @@ function QuestionCard({ question, onAnswer, xp, streak }) {
     setSelected(opt);
     setAnswered(true);
     setIsCorrect(correct);
+    
+    if (audioEnabled) {
+      narrate(correct ? getCorrectNarration() : getWrongNarration(), true);
+    }
   };
 
   const handleNext = () => {
@@ -208,7 +214,7 @@ function WorldComplete({ world, score, onNext, onMap, isLastWorld }) {
 
 
 
-export default function PlayPhase({ onComplete, xp, streak, onScoreUpdate }) {
+export default function PlayPhase({ onComplete, xp, streak, onScoreUpdate, audioEnabled }) {
   const [view, setView] = useState('map');
   const [currentWorld, setCurrentWorld] = useState(0);
   const [worldScores, setWorldScores] = useState(Array(TOTAL_WORLDS).fill(null));
@@ -285,6 +291,7 @@ export default function PlayPhase({ onComplete, xp, streak, onScoreUpdate }) {
             onAnswer={handleAnswer}
             xp={xp}
             streak={streak}
+            audioEnabled={audioEnabled}
           />
         </>
       )}
