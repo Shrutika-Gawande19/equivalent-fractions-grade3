@@ -16,30 +16,30 @@ const MAP_FILE = path.join(__dirname, '../src/utils/audioMap.js');
 const phrases = [
   // Wonder Phase
   { text: "Hmm... are these equal?", style: 'question' },
-  { text: "John has 1/2 of a pizza. Sarah has 2/4 of the SAME size pizza. Who has more?", style: 'question' },
+  { text: "John has 1 by 2 of a pizza. Sarah has 2 by 4 of the SAME size pizza. Who has more?", style: 'question' },
   { text: "When two fractions cover the same area, they are called equivalent fractions!", style: 'statement' },
   { text: "Mei has a chocolate bar cut into 4 pieces and eats 2. John's bar is cut into 2 — he eats 1. Did they eat the same amount?", style: 'question' },
   { text: "Two fractions that look different can still be equal!", style: 'statement' },
-  { text: "Priya's dosa is cut into 6 pieces. She eats 3. Is that the same as eating 1/2?", style: 'question' },
-  { text: "3/6 and 1/2... are they secretly the same fraction?", style: 'question' },
+  { text: "Priya's dosa is cut into 6 pieces. She eats 3. Is that the same as eating 1 by 2?", style: 'question' },
+  { text: "3 by 6 and 1 by 2... are they secretly the same fraction?", style: 'question' },
   // Story Phase
   { text: "Meet John from Toronto. He has a chocolate bar cut into 2 equal pieces. He eats 1 piece. That's one half!", style: 'statement' },
-  { text: '"John eats 1/2 of his chocolate bar!"', style: 'emphasis' },
+  { text: '"John eats 1 by 2 of his chocolate bar!"', style: 'emphasis' },
   { text: "One out of two equal parts!", style: 'statement' },
   { text: "Meet Mei from Beijing. She has the SAME size chocolate bar, cut into 4 equal pieces. She eats 2 pieces. That's two quarters!", style: 'statement' },
-  { text: '"Mei eats 2/4 of her bar!"', style: 'emphasis' },
+  { text: '"Mei eats 2 by 4 of her bar!"', style: 'emphasis' },
   { text: "Two out of four equal parts!", style: 'statement' },
-  { text: "Look — the shaded part is exactly equal! John's 1/2 and Mei's 2/4 cover the same area. They are EQUIVALENT fractions!", style: 'statement' },
-  { text: '"1/2 = 2/4 — same value, different names!"', style: 'emphasis' },
+  { text: "Look — the shaded part is exactly equal! John's 1 by 2 and Mei's 2 by 4 cover the same area. They are EQUIVALENT fractions!", style: 'statement' },
+  { text: '"1 by 2 equals 2 by 4 — same value, different names!"', style: 'emphasis' },
   { text: "Equivalent means equal value!", style: 'statement' },
-  { text: "Meet Priya from Mumbai. Her dosa is cut into 6 equal pieces. She eats 3 pieces — that's 3/6. Is it the same as 1/2 too?", style: 'question' },
-  { text: '"Is 3/6 the same as 1/2?"', style: 'question' },
+  { text: "Meet Priya from Mumbai. Her dosa is cut into 6 equal pieces. She eats 3 pieces — that's 3 by 6. Is it the same as 1 by 2?", style: 'question' },
+  { text: '"Is 3 by 6 the same as 1 by 2?"', style: 'question' },
   { text: "Let's check on the number line!", style: 'statement' },
-  { text: "1/2, 2/4 and 3/6 all land on the SAME point on the number line! They are all equivalent — same value, different names!", style: 'statement' },
-  { text: '"1/2 = 2/4 = 3/6 — all equivalent!"', style: 'emphasis' },
+  { text: "1 by 2, 2 by 4 and 3 by 6 all land on the SAME point on the number line! They are all equivalent — same value, different names!", style: 'statement' },
+  { text: '"1 by 2 equals 2 by 4 equals 3 by 6 — all equivalent!"', style: 'emphasis' },
   { text: "Same spot, different names!", style: 'statement' },
   { text: "Multiply or divide the top AND bottom by the same number and you get an equivalent fraction. The value stays the same!", style: 'statement' },
-  { text: '"1/2 × 2/2 = 2/4 — multiply both parts equally!"', style: 'emphasis' },
+  { text: '"1 by 2 times 2 by 2 equals 2 by 4 — multiply both parts equally!"', style: 'emphasis' },
   { text: "Now you know the secret!", style: 'celebration' },
   // Play Phase – answer feedback
   { text: "Correct.", style: 'celebration' },
@@ -54,7 +54,7 @@ const getSettings = (style) => {
   return settings;
 };
 
-const slugify = (text) => text.toLowerCase().replace(/[^a-z0-9]+/g, '_').replace(/(^_|_$)/g, '').substring(0, 40);
+const slugify = (text) => text.toLowerCase().replace(/[^a-z0-9]+/g, '_').replace(/(^_|_$)/g, '').substring(0, 200);
 
 const delay = (ms) => new Promise(resolve => setTimeout(resolve, ms));
 

@@ -5,7 +5,9 @@ import { getWonderNarration } from '../../utils/narration';
 const WONDER_QUESTIONS = [
   {
     question: "Priya's dosa is cut into 6 pieces. She eats 3. Is that the same as eating 1/2?",
+    questionAudio: "Priya's dosa is cut into 6 pieces. She eats 3. Is that the same as eating 1 by 2?",
     subtext: "3/6 and 1/2... are they secretly the same fraction?",
+    subtextAudio: "3 by 6 and 1 by 2... are they secretly the same fraction?",
     image: "/assets/images/dosa_6_pieces.png",
     bgEmojis: ["⅓", "3/6", "½", "✨", "=", "🌎"],
   },

@@ -5,7 +5,7 @@ import { getStoryNarration } from '../../utils/narration';
 
 const STORY_SLIDES = [
   {
-    title: "John's Chocolate Bar 🇨🇦",
+    title: "John's Chocolate Bar ",
     text: "Meet John from Toronto. He has a chocolate bar cut into 2 equal pieces. He eats 1 piece. That's one half!",
     highlight: '"John eats 1/2 of his chocolate bar!"',
     mascotText: "One out of two equal parts! 🍫",
@@ -13,7 +13,7 @@ const STORY_SLIDES = [
     emoji: '🍫',
   },
   {
-    title: "Mei's Chocolate Bar 🇨🇳",
+    title: "Mei's Chocolate Bar ",
     text: "Meet Mei from Beijing. She has the SAME size chocolate bar, cut into 4 equal pieces. She eats 2 pieces. That's two quarters!",
     highlight: '"Mei eats 2/4 of her bar!"',
     mascotText: "Two out of four equal parts! 🍫",
@@ -29,8 +29,8 @@ const STORY_SLIDES = [
     emoji: '✨',
   },
   {
-    title: "Priya's Dosa 🇮🇳",
-    text: "Meet Priya from Mumbai. Her dosa is cut into 6 equal pieces. She eats 3 pieces — that's 3/6. Is it the same as 1/2 too?",
+    title: "Priya's Dosa ",
+    text: "Meet Priya from Mumbai. Her dosa is cut into 6 equal pieces. She eats 3 pieces — that's 3/6. Is it the same as 1/2?",
     highlight: '"Is 3/6 the same as 1/2?"',
     mascotText: "Let's check on the number line! 🔢",
     img: '/images/priya.png',
@@ -68,15 +68,15 @@ export default function StoryPhase({ onComplete, audioEnabled }) {
     setTextVis(false); setHlVis(false);
     const t1 = setTimeout(() => setTextVis(true), 100);
     const t2 = setTimeout(() => setHlVis(true), 800);
-    
+
     // Play narration for the current slide
     if (audioEnabled) {
       narrate(getStoryNarration(slide), true);
     }
 
-    return () => { 
-      clearTimeout(t1); 
-      clearTimeout(t2); 
+    return () => {
+      clearTimeout(t1);
+      clearTimeout(t2);
       stopNarration();
     };
   }, [slide, audioEnabled]);
@@ -105,18 +105,18 @@ export default function StoryPhase({ onComplete, audioEnabled }) {
       <div className={`story-card ${anim ? 'flipping' : ''}`}>
         <div className="story-visual-section" style={{ padding: '0' }}>
           {s.img && (
-            <img 
-              src={s.img} 
+            <img
+              src={s.img}
               alt={s.title}
-              className="story-main-image" 
-              style={{ 
-                width: '100%', 
+              className="story-main-image"
+              style={{
+                width: '100%',
                 height: '240px',
                 display: 'block',
                 objectFit: 'contain',
                 borderRadius: '24px 24px 0 0',
                 borderBottom: '4px solid rgba(255,255,255,0.1)'
-              }} 
+              }}
             />
           )}
           <div className="story-image-overlay" />
@@ -124,7 +124,7 @@ export default function StoryPhase({ onComplete, audioEnabled }) {
 
         <div className="story-text-section">
           <h2 className="story-title" style={{ marginBottom: '1rem' }}>{s.title}</h2>
-          
+
           <p className={`story-text ${textVis ? 'revealed' : ''}`}>{s.text}</p>
           <div className={`story-highlight ${hlVis ? 'visible' : ''}`}>
             <span>✨</span>
