@@ -103,7 +103,7 @@ export default function StoryPhase({ onComplete, audioEnabled }) {
       </div>
 
       <div className={`story-card ${anim ? 'flipping' : ''}`}>
-        <div className="story-visual-section" style={{ padding: '0' }}>
+        <div className="story-visual-section" style={{ padding: '0', flex: 1, minHeight: '300px' }}>
           {s.img && (
             <img
               src={s.img}
@@ -111,18 +111,18 @@ export default function StoryPhase({ onComplete, audioEnabled }) {
               className="story-main-image"
               style={{
                 width: '100%',
-                height: '240px',
+                height: '100%',
+                minHeight: '300px',
                 display: 'block',
-                objectFit: 'contain',
-                borderRadius: '24px 24px 0 0',
-                borderBottom: '4px solid rgba(255,255,255,0.1)'
+                objectFit: 'cover',
+                borderRight: '4px solid rgba(255,255,255,0.1)'
               }}
             />
           )}
           <div className="story-image-overlay" />
         </div>
 
-        <div className="story-text-section">
+        <div className="story-text-section" style={{ flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
           <h2 className="story-title" style={{ marginBottom: '1rem' }}>{s.title}</h2>
 
           <p className={`story-text ${textVis ? 'revealed' : ''}`}>{s.text}</p>

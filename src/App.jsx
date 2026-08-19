@@ -13,7 +13,7 @@ const JOURNEY_ITEMS = [
   { icon: '🔍', label: 'Wonder' },
   { icon: '📖', label: 'Story' },
   { icon: '🧪', label: 'Simulate' },
-  { icon: '🎮', label: 'Play' },
+  { icon: '🎮', label: 'Practice Phase' },
   { icon: '📓', label: 'Reflect' },
 ];
 
@@ -60,6 +60,7 @@ export default function App() {
           className="audio-toggle-btn"
           onClick={toggleAudio}
           title={audioEnabled ? 'Mute' : 'Unmute'}
+          style={showJourney ? { left: '120px', right: 'auto' } : { left: '16px', right: 'auto' }}
         >
           {audioEnabled ? '🔊' : '🔇'}
         </button>
@@ -94,7 +95,7 @@ export default function App() {
         )}
 
         {/* Phase Content */}
-        {phase === 'intro'    && <IntroScreen onStart={() => changePhase('wonder')} />}
+        {phase === 'intro'    && <IntroScreen onStart={() => changePhase('wonder')} audioEnabled={audioEnabled} />}
         {phase === 'wonder'   && <WonderPhase   onComplete={() => changePhase('story')}    audioEnabled={audioEnabled} />}
         {phase === 'story'    && <StoryPhase    onComplete={() => changePhase('simulate')}  audioEnabled={audioEnabled} />}
         {phase === 'simulate' && <SimulatePhase onComplete={() => changePhase('play')}      audioEnabled={audioEnabled} />}

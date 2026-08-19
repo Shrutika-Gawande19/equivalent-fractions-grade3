@@ -1,7 +1,13 @@
-import React, { useState, useCallback, useRef } from 'react';
+import React, { useState, useCallback, useRef, useEffect } from 'react';
 import { FractionBar } from '../shared/FractionDiagrams';
-import { narrate } from '../../utils/audio';
-import { getCorrectNarration, getWrongNarration } from '../../utils/narration';
+import { narrate, stopNarration } from '../../utils/audio';
+import {
+  getPracticeMapIntro,
+  getWorldIntroNarration,
+  getCorrectNarration,
+  getWrongNarration,
+  getWorldCompleteNarration
+} from '../../utils/narration';
 
 const WORLDS = [
   { id: 0, name: 'Toronto Bakery', flag: '🇨🇦', icon: '🍞', color: '#ef4444', diffs: 'Easy' },
@@ -186,10 +192,16 @@ function QuestionCard({ question, onAnswer, xp, streak, audioEnabled }) {
   );
 }
 
-/* Duplicate QuestionCard block removed */
-
-function WorldComplete({ world, score, onNext, onMap, isLastWorld }) {
+function WorldComplete({ world, score, onNext, onMap, isLastWorld, audioEnabled }) {
   const stars = score >= 9 ? 3 : score >= 7 ? 2 : score >= PASS_SCORE ? 1 : 0;
+
+  useEffect(() => {
+    if (audioEnabled) {
+      narrate(getWorldCompleteNarration(score, PASS_SCORE, isLastWorld), true);
+    }
+    return () => stopNarration();
+  }, [audioEnabled, score, isLastWorld]);
+
   return (
     <div className="world-complete-card">
       <div className="world-complete-icon">{world.flag} {world.icon}</div>
@@ -211,9 +223,6 @@ function WorldComplete({ world, score, onNext, onMap, isLastWorld }) {
   );
 }
 
-
-
-
 export default function PlayPhase({ onComplete, xp, streak, onScoreUpdate, audioEnabled }) {
   const [view, setView] = useState('map');
   const [currentWorld, setCurrentWorld] = useState(0);
@@ -222,13 +231,25 @@ export default function PlayPhase({ onComplete, xp, streak, onScoreUpdate, audio
   const [questionIdx, setQuestionIdx] = useState(0);
   const worldScoreRef = useRef(0);
 
+  // Play Practice map welcome audio when map view is active
+  useEffect(() => {
+    if (view === 'map' && audioEnabled) {
+      narrate(getPracticeMapIntro(), true);
+    }
+    return () => stopNarration();
+  }, [view, audioEnabled]);
+
   const startWorld = useCallback((worldIdx) => {
+    stopNarration();
     setCurrentWorld(worldIdx);
     setQuestions(generateWorldQuestions(worldIdx));
     setQuestionIdx(0);
     worldScoreRef.current = 0;
     setView('playing');
-  }, []);
+    if (audioEnabled) {
+      narrate(getWorldIntroNarration(worldIdx), true);
+    }
+  }, [audioEnabled]);
 
   const handleAnswer = useCallback((isCorrect) => {
     onScoreUpdate(isCorrect);
@@ -244,7 +265,7 @@ export default function PlayPhase({ onComplete, xp, streak, onScoreUpdate, audio
           const updated = [...prevScores];
           updated[currentWorld] = newScore;
           if (currentWorld === TOTAL_WORLDS - 1 && newScore >= PASS_SCORE) {
-            setTimeout(() => onComplete({ worldScores: updated, totalXP: xp }), 2000);
+            setTimeout(() => onComplete({ worldScores: updated, totalXP: xp }), 2500);
           }
           return updated;
         });
@@ -255,11 +276,15 @@ export default function PlayPhase({ onComplete, xp, streak, onScoreUpdate, audio
   }, [currentWorld, onComplete, onScoreUpdate, xp]);
 
   const handleNextWorld = useCallback(() => {
+    stopNarration();
     const next = currentWorld + 1;
     if (next < TOTAL_WORLDS) startWorld(next);
   }, [currentWorld, startWorld]);
 
-
+  const handleReturnToMap = useCallback(() => {
+    stopNarration();
+    setView('map');
+  }, []);
 
   const currentQuestion = questions[questionIdx];
 
@@ -301,11 +326,11 @@ export default function PlayPhase({ onComplete, xp, streak, onScoreUpdate, audio
           world={WORLDS[currentWorld]}
           score={worldScoreRef.current}
           onNext={handleNextWorld}
-          onMap={() => setView('map')}
+          onMap={handleReturnToMap}
           isLastWorld={currentWorld === TOTAL_WORLDS - 1}
+          audioEnabled={audioEnabled}
         />
       )}
     </div>
   );
 }
-

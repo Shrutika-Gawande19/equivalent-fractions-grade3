@@ -1,5 +1,11 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { FractionBar } from '../shared/FractionDiagrams';
+import { narrate, stopNarration } from '../../utils/audio';
+import {
+  getMagicMachineIntro,
+  getMagicMachineMultiplierNarration,
+  getMagicMachineCompleteNarration
+} from '../../utils/narration';
 
 // Base fraction for the machine
 const BASE_FRACTION = { n: 2, d: 3 };
@@ -10,26 +16,43 @@ const MULTIPLIERS = [2, 3, 4, 5];
  * - Students try each multiplier (×2, ×3, ×4, ×5) one at a time.
  * - Each click animates the machine and shows the resulting equivalent fraction.
  * - After ALL four have been tried, a celebration message appears and a
- *   "Continue →" button lets them proceed (no auto-advance).
+ *   "Continue to Practice Phase →" button lets them proceed (no auto-advance).
  */
-export default function MagicFractionMachine({ onComplete }) {
+export default function MagicFractionMachine({ onComplete, audioEnabled }) {
   const [active, setActive] = useState(null);       // currently selected multiplier
   const [animating, setAnimating] = useState(false); // machine animation in progress
   const [tried, setTried] = useState(new Set());    // set of tried multipliers
   const [allDone, setAllDone] = useState(false);    // all 4 tried?
+
+  // Play intro audio once on mount
+  useEffect(() => {
+    if (audioEnabled) {
+      narrate(getMagicMachineIntro(), true);
+    }
+    return () => stopNarration();
+  }, [audioEnabled]);
 
   const handleMultiply = (m) => {
     if (animating) return;
     setActive(m);
     setAnimating(true);
 
+    if (audioEnabled) {
+      narrate(getMagicMachineMultiplierNarration(m), true);
+    }
+
     setTimeout(() => {
       setAnimating(false);
       const newTried = new Set(tried).add(m);
       setTried(newTried);
       if (newTried.size === MULTIPLIERS.length) {
-        // Short pause before showing celebration
-        setTimeout(() => setAllDone(true), 600);
+        // Short pause before showing celebration and complete narration
+        setTimeout(() => {
+          setAllDone(true);
+          if (audioEnabled) {
+            narrate(getMagicMachineCompleteNarration(), true);
+          }
+        }, 600);
       }
     }, 900); // animation duration
   };
@@ -188,29 +211,32 @@ export default function MagicFractionMachine({ onComplete }) {
         <div style={{
           background: 'linear-gradient(135deg, rgba(34,197,94,0.15), rgba(16,185,129,0.15))',
           border: '1px solid rgba(34,197,94,0.4)',
-          borderRadius: 12,
-          padding: '14px 20px',
-          marginTop: 8,
+          borderRadius: 16,
+          padding: '20px',
+          marginTop: 12,
           animation: 'fadeInUp 0.5s ease',
         }}>
           <p style={{
             color: 'var(--green)',
             fontFamily: 'var(--font-display)',
             fontWeight: 700,
-            fontSize: '1rem',
+            fontSize: '1.1rem',
             margin: '0 0 10px',
           }}>
             🎉 Amazing! You've discovered all 4 equivalent fractions of 2/3!
           </p>
-          <p style={{ color: 'var(--text-muted)', fontSize: '0.8rem', margin: '0 0 12px' }}>
+          <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem', margin: '0 0 16px' }}>
             2/3 = 4/6 = 6/9 = 8/12 = 10/15 — they all represent the same amount!
           </p>
           <button
-            className="btn btn-primary"
-            onClick={() => { if (onComplete) onComplete(); }}
-            style={{ minWidth: 140 }}
+            className="btn btn-primary btn-lg"
+            onClick={() => {
+              stopNarration();
+              if (onComplete) onComplete();
+            }}
+            style={{ minWidth: 200 }}
           >
-            Continue →
+            Continue to Practice Phase 🎮 →
           </button>
         </div>
       )}

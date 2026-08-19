@@ -1,14 +1,28 @@
-import React from 'react';
+import React, { useState } from 'react';
+import { narrate } from '../utils/audio';
+import { getIntroNarration } from '../utils/narration';
 
 const JOURNEY_PHASES = [
   { icon: '🔍', label: 'Wonder', desc: 'A fractions mystery!' },
   { icon: '📖', label: 'Story', desc: 'Postcards from the world' },
   { icon: '🧪', label: 'Simulate', desc: 'Build fractions yourself' },
-  { icon: '🎮', label: 'Play', desc: '100 global challenges' },
+  { icon: '🎮', label: 'Practice Phase', desc: '100 global challenges' },
   { icon: '📓', label: 'Reflect', desc: 'What did you learn?' },
 ];
 
-export default function IntroScreen({ onStart }) {
+export default function IntroScreen({ onStart, audioEnabled }) {
+  const [started, setStarted] = useState(false);
+
+  const handleStart = () => {
+    if (!started) {
+      setStarted(true);
+      if (audioEnabled !== false) {
+        narrate(getIntroNarration(), true);
+      }
+    } else {
+      onStart();
+    }
+  };
   return (
     <div className="intro-screen">
       <div className="intro-badge">✨  Grade 3 Maths</div>
@@ -49,8 +63,8 @@ export default function IntroScreen({ onStart }) {
         </div>
       </div>
 
-      <button className="btn btn-primary btn-lg intro-start-btn" onClick={onStart} id="start-journey-btn">
-        🚀 Begin Your Journey!
+      <button className="btn btn-primary btn-lg intro-start-btn" onClick={handleStart} id="start-journey-btn">
+        {started ? '🚀 Begin Your Journey!' : '▶️ Start'}
       </button>
 
       <div className="feature-cards">
